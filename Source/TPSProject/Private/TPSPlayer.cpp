@@ -50,6 +50,12 @@ ATPSPlayer::ATPSPlayer()
 		CrosshairUIWidget = TempUI.Class;
 	}
 	
+	ConstructorHelpers::FClassFinder<UUserWidget> TempSniperUI(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_Sniper.WBP_Sniper_C'"));
+	if (TempSniperUI.Succeeded())
+	{
+		SniperWidgetBP = TempSniperUI.Class;
+	}
+	
 	// 월드에 Instance로 등록하면 자동으로 PlayerController가
 	// Possess 한다.
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
@@ -65,7 +71,7 @@ void ATPSPlayer::BeginPlay()
 	
 	// crosshair 인스턴스 생성
 	CrosshairUI = CreateWidget(GetWorld(), CrosshairUIWidget);
-	CrosshairUI->AddToViewport();
+	SniperWidget = CreateWidget(GetWorld(), SniperWidgetBP);
 }
 
 // Called every frame
@@ -142,13 +148,28 @@ void ATPSPlayer::Fire()
 
 void ATPSPlayer::Zoom()
 {
-
 	Camera->SetFieldOfView(ZoomFov);
+	SwitchUI();
 }
 
 void ATPSPlayer::Release()
 {
 	Camera->SetFieldOfView(90.0f);
+	SwitchUI();
 }
 
+void ATPSPlayer::SwitchUI()
+{
+	bIsZoomed = !bIsZoomed;
+	if (!bIsZoomed)
+	{
+		CrosshairUI->AddToViewport();
+		SniperWidget->RemoveFromParent();
+	}
+	else
+	{
+		CrosshairUI->RemoveFromParent();
+		SniperWidget->AddToViewport();
+	}
+}
 

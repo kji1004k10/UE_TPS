@@ -62,4 +62,12 @@ public:
 	float ZoomFov = 30;
 	void Zoom();
 	void Release();
+	void SwitchUI();
+	bool bIsZoomed = false;
+	
+	UPROPERTY(EditDefaultsOnly, Category=UI)
+	TSubclassOf<class UUserWidget> SniperWidgetBP;
+	
+	UPROPERTY()
+	class UUserWidget* SniperWidget;
 };
